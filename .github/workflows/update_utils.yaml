@@ -24,7 +24,7 @@ jobs:
           owner: aatanasov1-godaddy
           repo: test_submodel
           github_token: ${{ github.token }}
-          workflow_file_name: test_workflow.yaml
+          workflow_file_name: test_workflow_test.yaml
 #          workflow_file_name: .github/workflows/test_workflow.yaml
 #          workflow_file_name: "Test Deploy"
           ref: main
