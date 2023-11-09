@@ -17,7 +17,7 @@ jobs:
         uses: convictional/trigger-workflow-and-wait@v1.6.1
         with:
           owner: aatanasov1-godaddy
-          repo: test_common
+          repo: test_submodel
           github_token: ${{ github.token }}
           workflow_file_name: test_workflow.yaml
           ref: main
