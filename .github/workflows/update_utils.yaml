@@ -1,11 +1,7 @@
 name: Update Utils
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'utils/**'
+  workflow_dispatch:
 #  pull_request:
 #    branches:
 #      - main
