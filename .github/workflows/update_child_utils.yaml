@@ -27,7 +27,7 @@ jobs:
         with:
           repository: aatanasov1-godaddy/test_submodel
           ref: main
-          fetch-depth: 0
+#          fetch-depth: 0
 
       - name: Get current dir 2
         id: pwd2
