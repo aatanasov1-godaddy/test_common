@@ -1,0 +1,37 @@
+name: Test Deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'utils/**'
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Current Repository
+        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # v3.1.0
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Get utils folder
+        id: set_up_utils
+        run: |
+          mkdir -p /tmp/test_common
+          cp -r utils /tmp/test_common/utils/
+
+      - name: Checkout Current Repository
+        uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # v3.1.0
+        with:
+          repository: aatanasov1-godaddy/test_submodel
+          ref: main
+          fetch-depth: 0
+
+      - name: Get current dir 2
+        id: pwd2
+        run: |
+          cp -r /tmp/test_common/utils utils
+          git status
+          git add utils && git -c 'user.name=AutomaticMergeUtils' -c 'user.email=AutomaticMergeUtils@godadd.com' commit -m 'Automatic commit' && git push
