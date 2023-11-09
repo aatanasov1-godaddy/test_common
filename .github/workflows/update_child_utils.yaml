@@ -57,4 +57,4 @@ jobs:
         run: |
           cp -r /tmp/test_common/utils utils
           git status
-          git add utils && git -c 'user.name=AutomaticMergeUtils' -c 'user.email=AutomaticMergeUtils@godadd.com' commit -m 'Automatic commit' && git push
+          git add utils && git -c 'user.name=AutomaticMergeUtils' -c 'user.email=AutomaticMergeUtils@godadd.com' commit -m 'Automatic commit' && git push -v
