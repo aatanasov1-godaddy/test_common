@@ -15,7 +15,7 @@ jobs:
     permissions: write-all
 #    permissions:
 #      contents: write-all
-#    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
 #    steps:
 #      - name: Trigger child repo
 ##        run:
