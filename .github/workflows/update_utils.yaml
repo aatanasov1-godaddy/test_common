@@ -1,0 +1,24 @@
+name: Update Utils
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+    paths:
+      - 'utils/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Current Repository
+        uses: convictional/trigger-workflow-and-wait@v1.6.1
+        with:
+          owner: aatanasov1-godaddy
+          repo: test_common
+          workflow_file_name: test_workflow.yaml
+          ref: main
+          wait_interval: 10
+          wait_workflow: true
