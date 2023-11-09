@@ -1,1 +1,1 @@
-It's my submodule v6
+It's my submodule v7
