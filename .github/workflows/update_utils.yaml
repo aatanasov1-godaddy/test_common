@@ -18,15 +18,17 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Current Repository
-        uses: convictional/trigger-workflow-and-wait@v1.6.1
-        with:
-          owner: aatanasov1-godaddy
-          repo: test_submodel
-          github_token: ${{ github.token }}
-          workflow_file_name: test_workflow_test.yaml
-#          workflow_file_name: .github/workflows/test_workflow.yaml
-#          workflow_file_name: "Test Deploy"
-          ref: main
-          wait_interval: 10
-          wait_workflow: true
+      - name: Trigger child repo
+        run:
+          echo "${{ github.token }}"
+#        uses: convictional/trigger-workflow-and-wait@v1.6.1
+#        with:
+#          owner: aatanasov1-godaddy
+#          repo: test_submodel
+#          github_token: ${{ github.token }}
+#          workflow_file_name: test_workflow_test.yaml
+##          workflow_file_name: .github/workflows/test_workflow.yaml
+##          workflow_file_name: "Test Deploy"
+#          ref: main
+#          wait_interval: 10
+#          wait_workflow: true
