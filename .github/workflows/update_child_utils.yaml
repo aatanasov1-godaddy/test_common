@@ -27,6 +27,8 @@ jobs:
         with:
           repository: aatanasov1-godaddy/test_submodel
           ref: main
+          permissions:
+            contents: write
 #          fetch-depth: 0
 
       - name: Get current dir 2
