@@ -1,13 +1,16 @@
 name: Update Utils
 
 on:
-  pull_request:
+  push:
     branches:
       - main
-    types:
-      - closed
-    paths:
-      - 'utils/**'
+#  pull_request:
+#    branches:
+#      - main
+#    types:
+#      - closed
+#    paths:
+#      - 'utils/**'
 
 jobs:
   deploy:
@@ -19,7 +22,8 @@ jobs:
           owner: aatanasov1-godaddy
           repo: test_submodel
           github_token: ${{ github.token }}
-          workflow_file_name: test_workflow.yaml
+#          workflow_file_name: test_workflow.yaml
+          workflow_file_name: "Test Deploy"
           ref: main
           wait_interval: 10
           wait_workflow: true
