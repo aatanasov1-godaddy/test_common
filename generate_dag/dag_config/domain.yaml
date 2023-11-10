@@ -23,7 +23,7 @@ emr:
       - gdcorp-dna/de-marketing-mdm/utils/*
   ingest_data:
     spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0 --conf spark.driver.memoryOverhead=8G
-    params: -d mdm_local -t domain
+    params: -d mdm_local -t domain123
     py_files:
       - gdcorp-dna/de-marketing-mdm/domain/spark/sql/*
       - gdcorp-dna/de-marketing-mdm/utils/*

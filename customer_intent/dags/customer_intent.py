@@ -52,7 +52,6 @@ DEPENDENCIES = [
     'websites_and_marketing_cln.website_cln',
     'enterprise.dim_entitlement',
     'enterprise.dim_subscription',
-    'marketing_mart.marketable_customer'
 ]
 
 CODE_BUCKET = f's3://gd-mktgdata-{ENV}-code'
