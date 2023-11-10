@@ -26,6 +26,9 @@ jobs:
     - name: Run Validate DAG code
       run: python -m unittest generate_dag/tests/test_generate_dag.py
 
+    - name: Show DAG validation report
+      run: cat /tmp/validation_report.yaml
+
     - name: Info Message
       run: |
         echo "Please, make sure DAG config is alligned with actual DAG code"
