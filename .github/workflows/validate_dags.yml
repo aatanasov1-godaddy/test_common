@@ -1,5 +1,4 @@
-name: Spark Tests
-
+name: DAG Validate
 on:
   push:
    branches: [ main ]
@@ -11,7 +10,7 @@ on:
 
 jobs:
   tests:
-    runs-on: [self-hosted, de-mktgdata-common]
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
@@ -26,3 +25,8 @@ jobs:
 
     - name: Run Validate DAG code
       run: python -m unittest generate_dag/tests/test_generate_dag.py
+
+    - name: Info Message
+      run: |
+        echo "Please, make sure DAG config is alligned with actual DAG code"
+        echo "If it is custom case you can add pipeline name in generate_dag/validate_config.yaml under exclude"
