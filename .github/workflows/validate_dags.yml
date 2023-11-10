@@ -27,9 +27,11 @@ jobs:
       run: python -m unittest generate_dag/tests/test_generate_dag.py
 
     - name: Show DAG validation report
+      if: success() || failure()
       run: cat /tmp/validation_report.yaml
 
-    - name: Info Message
+    - name: Informational error message
+      if: failure()
       run: |
-        echo "Please, make sure DAG config is alligned with actual DAG code"
+        echo "Please, make sure DAG config is aligned with actual DAG code"
         echo "If it is custom case you can add pipeline name in generate_dag/validate_config.yaml under exclude"
