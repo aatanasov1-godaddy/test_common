@@ -1,0 +1,101 @@
+pipeline_name: customer_insight
+interval: 15 13 * * *
+airflow_tag:
+  layer: mdm
+  team: marketing
+dependencies:
+  - marketing_mart.marketable_customer
+  - marketing_mart_local.ads_product
+  - marketing_mart_local.payment_profile_snap
+  - venture_mart.domain_footprint_history
+  - venture_mart.dns_nameserver_records_cln
+  - venture_mart.dns_a_records_cln
+  - venture_mart.venture_footprint_history
+  - callcenterreporting.rptfactc3inboundcall_snap
+  - analytic_feature.customer_type
+emr:
+  master_instance_type : m5.12xlarge
+  core_instance_type : m5.12xlarge
+  number_of_core_instances: 4
+  bootstrap_file_path : utils/bootstrap.sh
+  ingest_data_stg:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t customer_insight_history
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/customer_insight/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  ingest_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t customer_insight
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/customer_insight/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  extract_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t customer_insight
+    custom_rename:
+      next_auto_renewing_expiration_utc_ts: next_auto_renewing_expiration_ts
+      next_payment_expiration_utc_ts: next_payment_expiration_ts
+      latest_site_visit_utc_ts: latest_site_visit_ts
+      latest_professional_search_page_visit_utc_ts: latest_professional_search_page_visit_ts
+      next_msoffice_expiration_utc_ts: next_msoffice_expiration_ts
+      next_ssl_expiration_utc_ts: next_ssl_expiration_ts
+      next_hosting_expiration_utc_ts: next_hosting_expiration_ts
+      next_site_builder_expiration_utc_ts: next_site_builder_expiration_ts
+      latest_seo_search_page_visit_utc_ts: latest_seo_search_page_visit_ts
+      purchased_email_migration_last_21_days_count: purchased_email_migration_last_21_days_count
+      life_time_gross_total_spend_usd_amt: life_time_gross_total_spend
+      purchased_hosting_migration_last_20_days_count: purchased_hosting_migration_last_20_days_count
+      next_expiring_active_payment_profile_utc_ts: next_expiring_active_payment_profile_ts
+      expired_domain_attached_to_contact_email_flag: is_expired_domain_attached_to_contact_email
+      expiring_domain_attached_to_contact_email_flag: is_expiring_domain_attached_to_contact_email
+      product_expiring_next_90_days_with_expired_payment_flag: is_product_expiring_next_90_days_with_expired_payment
+      unparked_domain_count: unparked_domains_count
+      o365_products_not_tied_to_domain_count: o365_products_not_tied_to_domain_count
+      expired_domain_within_90_days_protected_dop_flag: is_expired_domain_within_90_days_protected_dop
+      next_manual_renewal_expiring_with_list_price_over_20_utc_ts: next_manual_renewal_expiring_with_list_price_over_20_ts
+      open_exchange_product_count: open_exchange_product_count
+      website_express_protection_product_count: website_express_protection_product_count
+      website_deluxe_protection_product_count: website_deluxe_protection_product_count
+      website_firewall_protection_product_count: website_firewall_protection_product_count
+      website_ultimate_protection_product_count: website_ultimate_protection_product_count
+      hosted_domain_count: hosted_domains_count
+      hosted_internally_domain_count: hosted_internally_domains_count
+      new_account_product_count: count_of_new_account_products
+      last_failed_billing_product_utc_ts: last_failed_billing_product_ts
+      domain_discount_club_count: domain_discount_club_count
+      active_delegate_count: active_delegate_count
+      dot_com_domain_expire_ts_within_30_days_count: dot_com_domains_expire_ts_within_30_days_count
+      dot_net_domain_expire_ts_within_30_days_count: dot_net_domains_expire_ts_within_30_days_count
+      dot_org_domain_expire_ts_within_30_days_count: dot_org_domains_expire_ts_within_30_days_count
+      website_design_makeover_flag: is_website_design_makeover
+      website_design_intent_flag: is_website_design_intent
+      domain_expired_in_last_10_days_count: domains_expired_in_last_10_days_count
+      word_press_basic_deluxe_count: word_press_basic_deluxe_count
+      web_security_express_deluxe_ultimate_count: web_security_express_deluxe_ultimate_count
+      business_hosting_count: business_hosting_count
+      customer_active_venture_count: customer_active_venture_count
+      latest_expired_hosting_expiration_utc_ts: latest_expired_hosting_expiration_ts
+      full_domain_privacy_and_protection_count: full_domain_privacy_and_protection_count
+      ultimate_domain_protection_and_security_count: ultimate_domain_protection_and_security_count
+      latest_inbound_call_utc_ts: latest_inbound_call_ts
+      pnl_pillar_name: customer_pillar_daily
+      virtual_private_hosting_count: virtual_private_hosting_count
+      websites_plus_marketing_services_count: websites_plus_marketing_services_count
+      latest_websites_plus_marketing_services_order_utc_ts: latest_websites_plus_marketing_services_order_ts
+      latest_websites_plus_marketing_free_build_order_utc_ts: latest_websites_plus_marketing_free_build_order_ts
+      website_essential_protection_product_count: website_essential_protection_product_count
+      education_vertical_classification_count: education_vertical_classification_count
+      government_vertical_classification_count: government_vertical_classification_count
+      healthcare_vertical_classification_count: healthcare_vertical_classification_count
+      restaurant_vertical_classification_count: restaurant_vertical_classification_count
+      recreational_vertical_classification_count: recreational_vertical_classification_count
+      engineering_vertical_classification_count: engineering_vertical_classification_count
+      etl_first_load_utc_ts: etl_first_load_ts
+      etl_last_refresh_utc_ts: etl_last_refresh_ts
+
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/customer_insight/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  emr_tag:
+    data_sub_domain: other

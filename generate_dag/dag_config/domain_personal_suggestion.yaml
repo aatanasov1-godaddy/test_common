@@ -1,0 +1,39 @@
+pipeline_name: domain_personal_suggestion
+interval: 0 16 * * *
+airflow_tag:
+  layer: mdm
+  team: marketing
+dependencies:
+  - marketing_mart_local.ads_billing_domains
+  - domain_science_mart.email_campaign_suggested_domains
+  - marketing_mart.marketable_customer
+  - godaddy.rp_salesmonitor_internalshopper_snap
+emr:
+  master_instance_type : m5.12xlarge
+  core_instance_type : m5.12xlarge
+  number_of_core_instances: 2
+  bootstrap_file_path : utils/bootstrap.sh
+  ingest_data_stg:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t domain_personal_suggestion_history
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/domain_personal_suggestion/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  ingest_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t domain_personal_suggestion
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/domain_personal_suggestion/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  extract_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t domain_personal_suggestion
+    custom_rename:
+      display_order_num: display_order
+      etl_first_load_utc_ts: etl_first_load_ts
+      etl_last_refresh_utc_ts: etl_last_refresh_ts
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/domain_personal_suggestion/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  emr_tag:
+    data_sub_domain: 'product'

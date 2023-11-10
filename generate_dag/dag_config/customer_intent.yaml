@@ -1,0 +1,39 @@
+pipeline_name: customer_intent
+interval: 30 7 * * *
+airflow_tag:
+  layer: mdm
+  team: marketing
+dependencies:
+  - websites_and_marketing_cln.website_cln
+  - enterprise.dim_entitlement
+  - enterprise.dim_subscription
+  - marketing_mart.marketable_customer
+emr:
+  master_instance_type : m5.12xlarge
+  core_instance_type : m5.12xlarge
+  number_of_core_instances: 4
+  bootstrap_file_path : utils/bootstrap.sh
+  ingest_data_stg:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t customer_intent_history
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/customer_intent/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  ingest_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t customer_intent
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/customer_intent/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  extract_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t customer_intent
+    custom_rename:
+      intent_flag: is_intent
+      etl_first_load_utc_ts: etl_first_load_ts
+      etl_last_refresh_utc_ts: etl_last_refresh_ts
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/customer_intent/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  emr_tag:
+    data_sub_domain: other

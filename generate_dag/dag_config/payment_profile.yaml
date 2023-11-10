@@ -1,0 +1,52 @@
+pipeline_name: payment_profile
+interval: 30 8 * * *
+airflow_tag:
+  layer: mdm
+  team: marketing
+data_lake_table_name: customer_payment_profile
+dependencies:
+  - marketing_mart.marketable_customer
+  - marketing_mart_local.ads_product
+  - marketing_mart_local.payment_profile_snap
+emr:
+  master_instance_type : m5.8xlarge
+  core_instance_type : m5.8xlarge
+  number_of_core_instances: 1
+  bootstrap_file_path : utils/bootstrap.sh
+  ingest_data_stg:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t payment_profile_history
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/payment_profile/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  ingest_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t payment_profile
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/payment_profile/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  extract_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t payment_profile
+    custom_rename:
+      customer_id: CustomerID
+      payment_profile_id: PaymentProfileID
+      shopper_id: ShopperID
+      payment_type: PaymentType
+      payment_sub_type: PaymentSubType
+      expiration_month_num: ExpirationMonth
+      expiration_year_num: ExpirationYear
+      tied_to_active_paid_product_flag: IsTiedToActivePaidProduct
+      tied_to_active_product_flag: IsTiedToActiveProduct
+      expired_flag: IsExpired
+      method_blacklist_flag: IsMethodBlacklist
+      payment_profile_status: PaymentProfileStatus
+      parent_payment_profile_id: ParentProfileID
+      etl_first_load_utc_ts: etl_first_load_ts
+      etl_last_refresh_utc_ts: etl_last_refresh_ts
+      etl_last_refresh_id: etl_last_refresh_id
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/payment_profile/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  emr_tag:
+    data_sub_domain: other

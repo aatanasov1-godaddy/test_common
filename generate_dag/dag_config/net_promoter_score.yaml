@@ -1,0 +1,92 @@
+pipeline_name: net_promoter_score
+interval: 0 14 * * *
+airflow_tag:
+  layer: mdm
+  team: marketing
+data_lake_table_name: customer_net_promoter_score
+dependencies:
+  - analytic_feature.customer_type
+  - analytic_feature.shopper_churn
+  - analytic_feature.shopper_ltv
+  - analytic_feature.shopper_tenure
+  - dp_enterprise.uds_product_billing
+  - fortknox.fortknox_shopper_snap
+  - marketing_mart.customer_consent
+  - marketing_mart.marketable_customer
+  - venture_legacy.customer_value_history
+emr:
+  master_instance_type : m5.12xlarge
+  core_instance_type : m5.12xlarge
+  number_of_core_instances: 20
+  main_waiter_poke_interval: 120
+  bootstrap_file_path : utils/bootstrap.sh
+  ingest_data_stg:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0 --conf spark.driver.memoryOverhead=16G
+    params: -d mdm_local -t net_promoter_score_history
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/net_promoter_score/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  ingest_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t net_promoter_score
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/net_promoter_score/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  extract_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t net_promoter_score
+    final_rename: True
+    custom_rename:
+      customer_id: customer_id
+      market_id: marketID
+      first_name: FirstName
+      last_name: LastName
+      email: Email
+      phone: Phone
+      churn_utc_date: churn_date
+      churn_category: churn
+      unsubscribed_flag: Unsubscribed
+      unsubscribed_utc_date: unsubscribed_date
+      customer_loc_state_code: state
+      tenure_months: tenure_mon
+      revenue_per_year_usd_category: rev_p_yr
+      total_gcr_usd_category: ltv
+      do_not_call_category: dnc
+      do_not_call_utc_date: dnc_date
+      company_name: company
+      sub_brand: sub-brand
+      country_name: country
+      country_long: country_long
+      region1: region1
+      region2: region2
+      region3: region3
+      hvc_segment: hvc_segment
+      hvc_segment_utc_date: hvc_segment_date
+      customer_type_name: customer_type_name
+      customer_type_utc_date: customer_type_name_date
+      customer_type_reason_desc: customer_type_reason_desc
+      customer_type_reason_utc_date: customer_type_reason_desc_date
+      own_api_reseller_category: own_API_Reseller
+      own_api_reseller_utc_date: own_API_Reseller_date
+      own_basic_reseller: own_Basic_Reseller
+      own_basic_reseller_utc_date: own_Basic_Reseller_date
+      own_pro_reseller: own_Pro_Reseller
+      own_pro_reseller_utc_date: own_Pro_Reseller_date
+      own_super_reseller: own_Super_Reseller
+      own_super_reseller_utc_date: own_Super_Reseller_date
+      language_name: languagename
+      market_id_language: Language
+      language_code: Q_Language
+      external_data_reference: ExternalDataReference
+      ltv_raw_usd_amt: ltv_raw
+      last_survey_utc_date: LastSurveyDate
+      power_seller_category: PowerSeller
+      power_seller_utc_date: PowerSeller_date
+      etl_delete_flag: EtlDeleteFlag
+      etl_first_load_utc_ts: EtlFirstLoadTS
+      etl_last_refresh_utc_ts: EtlLastRefreshTS
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/net_promoter_score/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  emr_tag:
+    data_sub_domain: other

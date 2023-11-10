@@ -1,0 +1,55 @@
+pipeline_name: customer
+interval: 0 7 * * *
+airflow_tag:
+  layer: mdm
+  team: marketing
+dependencies:
+# check if no success file, can dependencies pass, if not, change to _local for testing
+# in the process of adding datalake success operator
+  - marketing_mart.marketable_customer
+  - enterprise.dim_subscription
+  - enterprise.dim_entitlement
+  - hosting_webpro_api.auth_user_snap
+  - hosting_webpro_api.dashboard_agreement_snap
+  - hosting_webpro_api.clients_client_snap
+  - godaddy.rp_salesmonitor_internalshopper_snap
+  - marketing_mart_local.ads_product
+  - dp_enterprise.uds_product_billing
+  - analytic_feature.shopper_360_current
+  - analytic.ads_bill_line
+  - cust_customertracking.shopperheader_snap
+  - marketing_mart.customer_membership
+  - marketing_mart.reseller_customer
+  - marketing_mart.customer_segment
+  - marketing_mart.customer_account_lifecycle
+  - marketing_mart.customer_consent
+  - marketing_mart.customer_suppression
+  
+emr:
+  master_instance_type : m5.12xlarge
+  core_instance_type : m5.12xlarge
+  number_of_core_instances: 4
+  bootstrap_file_path : utils/bootstrap.sh
+  ingest_data_stg:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t customer_history
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/customer/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  ingest_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t customer
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/customer/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  extract_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t customer
+    custom_rename:
+      etl_first_load_utc_ts: etl_first_load_ts
+      etl_last_refresh_utc_ts: etl_last_refresh_ts
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/customer/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  emr_tag:
+    data_sub_domain: other

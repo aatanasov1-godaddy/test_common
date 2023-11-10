@@ -1,0 +1,55 @@
+pipeline_name: reseller
+interval: 30 9 * * *
+airflow_tag:
+  layer: mdm
+  team: marketing
+dependencies:
+  - marketing_mart_local.reseller
+emr:
+  master_instance_type : m5.12xlarge
+  core_instance_type : m5.12xlarge
+  number_of_core_instances: 8
+  bootstrap_file_path : utils/bootstrap.sh
+  ingest_data_stg:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t reseller_history
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/reseller/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  ingest_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t reseller
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/reseller/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  extract_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t reseller -np 10 -m 10000000
+    custom_rename:
+      program_id: program_id
+      private_label_id: private_label_id
+      reseller_type_id: reseller_type_id
+      support_email: support_email
+      display_name: display_name
+      company_name: company_name
+      home_url: home_url
+      palette_id: palette_id
+      desktop_logo: desktop_logo
+      mobile_logo: mobile_logo
+      email_opt_in_flag: is_email_opt_in
+      manage_domains_url: manage_domains_url
+      support_phone: support_phone
+      custom_support_phone: custom_support_phone
+      support_url: support_url
+      market: market
+      active_flag: is_active
+      forward_to_private_label_id: forward_to_private_label_id
+      my_product_url: my_product_url
+      contact_preferences_url: contact_preferences_url
+      etl_first_load_utc_ts: etl_first_load_ts
+      etl_last_refresh_utc_ts: etl_last_refresh_ts
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/reseller/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  emr_tag:
+    data_sub_domain: 'reseller'

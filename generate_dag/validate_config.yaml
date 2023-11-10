@@ -1,0 +1,8 @@
+exclude:
+  - compare_data_lake
+  - compare_mdm
+  - create_emr_on_demand
+  - customer
+  - customer_product_count
+  - payment_profile
+  - pipeline_template

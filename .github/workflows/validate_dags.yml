@@ -1,0 +1,28 @@
+name: Spark Tests
+
+on:
+  push:
+   branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'dags/**'
+      - '**/dags/**'
+
+jobs:
+  tests:
+    runs-on: [self-hosted, de-mktgdata-common]
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.7'
+
+    - name: Install Python Dependencies
+      run: pip install pyyaml
+
+    - name: Run Validate DAG code
+      run: python -m unittest generate_dag/tests/test_generate_dag.py

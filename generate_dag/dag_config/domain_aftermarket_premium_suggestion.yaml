@@ -1,0 +1,42 @@
+pipeline_name: domain_aftermarket_premium_suggestion
+interval: 0 16 * * *
+airflow_tag:
+  layer: mdm
+  team: marketing
+dependencies:
+  - marketing_mart.marketable_customer
+  - domain_science_mart.email_campaign_aftermarket_premium_daily
+  - godaddy.rp_salesmonitor_internalshopper_snap
+  - marketing_mart_local.ads_billing_domains
+  - marketing_mart.domain_information
+emr:
+  master_instance_type : m5.12xlarge
+  core_instance_type : m5.12xlarge
+  number_of_core_instances: 6
+  bootstrap_file_path : utils/bootstrap.sh
+  ingest_data_stg:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t domain_aftermarket_premium_suggestion_history
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/domain_aftermarket_premium_suggestion/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  ingest_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t domain_aftermarket_premium_suggestion
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/domain_aftermarket_premium_suggestion/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  extract_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t domain_aftermarket_premium_suggestion
+    custom_rename:
+      pick_rank_num: pick_best
+      suggested_domain_price_usd_amt: suggested_domain_price
+      owned_domain_expiration_utc_ts: owned_domain_expiration_ts
+      etl_first_load_utc_ts: etl_first_load_ts
+      etl_last_refresh_utc_ts: etl_last_refresh_ts
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/domain_aftermarket_premium_suggestion/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  emr_tag:
+    data_sub_domain: 'product'

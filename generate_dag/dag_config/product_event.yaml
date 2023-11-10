@@ -1,0 +1,45 @@
+pipeline_name: product_event
+interval: 20 9 * * *
+airflow_tag:
+  layer: mdm
+  team: marketing
+dependencies:
+  - marketing_mart_local.ads_product_event
+emr:
+  master_instance_type : m5.4xlarge
+  core_instance_type : r5d.4xlarge
+  number_of_core_instances: 1
+  bootstrap_file_path : utils/bootstrap.sh
+  ingest_data_stg:
+    spark_cmd: --driver-memory 8g --conf spark.executor.memoryOverhead=8G
+    params: -d mdm_local -t product_event_history
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/product_event/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  ingest_data:
+    spark_cmd: --driver-memory 8g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t product_event
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/product_event/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  extract_data:
+    spark_cmd: --driver-memory 8g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t product_event
+    custom_rename:
+      order_utc_ts: order_ts
+      free_trial_order_utc_ts: free_trial_order_ts
+      cancel_utc_ts: cancel_ts
+      first_mile_stone_utc_ts: first_milestone_ts
+      set_up_complete_utc_ts: setup_complete_ts
+      answered_category_and_business_activation_flag: is_answered_category_and_business_activation
+      activated_flag: is_activated
+      ssl_issued_flag: is_ssl_issued
+      published_flag: is_published
+      added_first_product_to_site_utc_ts: added_first_product_to_site_ts
+      etl_first_load_utc_ts: etl_first_load_ts
+      etl_last_refresh_utc_ts: etl_last_refresh_ts
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/product_event/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  emr_tag:
+    data_sub_domain: other

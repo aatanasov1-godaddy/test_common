@@ -1,0 +1,56 @@
+pipeline_name: order
+interval: 30 9 * * *
+airflow_tag:
+  layer: mdm
+  team: marketing
+dependencies:
+  - bigreporting.dim_product_snap
+  - enterprise.fact_bill
+  - enterprise.fact_bill_line
+  - enterprise.fact_entitlement_bill
+  - enterprise.free_entitlement
+  - godaddy.gdshop_free_product_package_snap
+  - marketing_mart.marketable_customer
+  - marketing_mart_local.ads_product
+emr:
+  master_instance_type : m5.12xlarge
+  core_instance_type : m5.12xlarge
+  number_of_core_instances: 8
+  bootstrap_file_path : utils/bootstrap.sh
+  ingest_data_stg:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t order_history
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/order/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  ingest_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t order
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/order/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  extract_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t order -np 10 -m 10000000
+    custom_rename:
+      auto_renewed_flag: is_auto_renewed
+      first_resource_order_flag: is_first_resource_order
+      free_to_paid_conversion_flag: is_free_to_paid_conversion
+      free_trial_flag: is_free_trial
+      friends_and_family_discount_flag: is_friends_and_family_discount
+      latest_resource_order_flag: is_latest_resource_order
+      renewal_flag: is_renewal
+      order_utc_ts: order_ts
+      list_price_usd_amount: list_price_amount
+      price_delta_usd_amount: price_delta_amount
+      purchase_usd_amount: purchase_amount
+      order_item_gcr_usd_amount: order_item_gcr
+      product_term_type: product_term
+      parent_product_type_desc: parent_product_type_name
+      etl_first_load_utc_ts: etl_first_load_ts
+      etl_last_refresh_utc_ts: etl_last_refresh_ts
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/order/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  emr_tag:
+    data_sub_domain: orders

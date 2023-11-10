@@ -1,0 +1,57 @@
+pipeline_name: product
+interval: 30 3 * * *
+airflow_tag:
+  layer: mdm
+  team: marketing
+dependencies:
+  - marketing_mart_local.ads_product
+  - godaddy.pl_signupinfo_snap
+  - gdmastercatalog.catalog_productresellertype_snap
+  - marketing_mart.marketable_customer
+emr:
+  master_instance_type : r5.12xlarge
+  core_instance_type : r5.12xlarge
+  number_of_core_instances: 4
+  bootstrap_file_path : utils/bootstrap.sh
+  extract_waiter_poke_max_attempts: 240
+  ingest_data_stg:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t product_history
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/product/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  ingest_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t product
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/product/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  extract_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t product -np 10 -m 10000000
+    custom_rename:
+      billing_attempt_cnt: billing_attempt_count
+      billing_cancel_utc_ts: cancelled_ts
+      billing_create_utc_ts: billing_create_ts
+      dpp_solution_set_name: dpp_solution_set
+      expiration_utc_ts: expiration_ts
+      active_flag: is_active
+      addon_flag: is_addon
+      auto_renew_flag: is_auto_renewing
+      expired_flag: is_expired
+      free_flag: is_free
+      trial_flag: is_trial
+      primary_product_flag: is_primary_product
+      next_domain_auto_renewal_utc_ts: next_domain_auto_renewal_ts
+      original_base_order_utc_ts: original_base_order_ts
+      version7_website_flag: is_version7_website
+      workspace_email_mailbox_cnt: workspace_email_mailbox_count
+      pick_best_id: pickbest
+      billing_utc_ts: billing_ts
+      etl_first_load_utc_ts: etl_first_load_ts
+      etl_last_refresh_utc_ts: etl_last_refresh_ts
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/product/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  emr_tag:
+    data_sub_domain: other

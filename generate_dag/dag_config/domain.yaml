@@ -1,0 +1,59 @@
+pipeline_name: domain
+interval: 0 13 * * *
+airflow_tag:
+  layer: mdm
+  team: marketing
+dependencies:
+  - marketing_mart.domain_information
+  - venture_mart.domain_footprint_history
+  - gd_traffic_customer_cln.traffic_event_cln
+  - venture_mart.dns_nameserver_records_cln
+  - venture_mart.dns_a_records_cln
+  - marketing_mart.marketable_customer
+emr:
+  master_instance_type : m5.8xlarge
+  core_instance_type : r5d.8xlarge
+  number_of_core_instances: 10
+  bootstrap_file_path : utils/bootstrap.sh
+  ingest_data_stg:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0 --conf spark.driver.memoryOverhead=8G
+    params: -d mdm_local -t domain_history
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/domain/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  ingest_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0 --conf spark.driver.memoryOverhead=8G
+    params: -d mdm_local -t domain
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/domain/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  extract_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0 --conf spark.driver.memoryOverhead=8G
+    params: -d mdm_local -t domain
+    custom_rename:
+      create_utc_ts: create_ts
+      marketing_category: category
+      activated_flag: is_activated
+      mail_provider_name: mail_provider
+      ssl_certificate_flag: is_ssl_certificate
+      ssl_secured_flag: is_ssl_secured
+      last_activation_utc_ts: latest_activation_ts
+      local_traffic_30d_session_count: local_traffic_30_day_count
+      ssl_end_utc_ts: ssl_end_ts
+      ecommerce_certainty_score: ecommerce_certainty
+      brick_and_mortar_flag: is_brick_and_mortar
+      hosted_flag: is_hosted
+      mail_flag: is_mail
+      published_site_flag: is_published_site
+      social_media_type_array: social_media_types
+      social_media_widget_array: social_media_widgets
+      domain_status_name: domain_status
+      domain_valuation_usd_amt: domain_valuation
+      brazil_key_systems_flag: is_br_key_systems
+      etl_first_load_utc_ts: etl_first_load_ts
+      etl_last_refresh_utc_ts: etl_last_refresh_ts
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/domain/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  emr_tag:
+    data_sub_domain: 'product'

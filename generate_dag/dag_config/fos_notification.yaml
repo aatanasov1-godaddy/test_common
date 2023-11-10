@@ -1,0 +1,58 @@
+pipeline_name: fos_notification
+interval: 30 8 * * *
+airflow_tag:
+  layer: mdm
+  team: marketing
+data_lake_table_name: customer_fos_notification
+dependencies:
+  - marketing_mart.marketable_customer
+  - marketing_mart_local.ads_product
+  - marketing_mart_local.payment_profile_snap
+  - domains.domaininfo_snap
+  - enterprise.fact_marketing_email_send
+  - user_insights_platform_cln.uip_user_insight_cln
+additional_dependencies:
+  - marketing_mart.customer_consent
+emr:
+  master_instance_type : r5.12xlarge
+  core_instance_type : r5.12xlarge
+  number_of_core_instances: 4
+  bootstrap_file_path : utils/bootstrap.sh
+  ingest_data_stg:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t fos_notification_history
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/fos_notification/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  ingest_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t fos_notification
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/fos_notification/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  extract_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t fos_notification
+    custom_rename:
+      domain_expiration_multiple_flag: is_domain_expiration_multiple
+      domain_expiration_single_flag: is_domain_expiration_single
+      domain_manual_renewal_multiple_flag: is_domain_manual_renewal_multiple
+      domain_manual_renewal_single: is_domain_manual_renewal_single
+      dop_cancelation_alert_flag: is_dop_cancellation_alert
+      dop_suspension_alert_flag: is_dop_suspension_alert
+      expired_credit_card_alert_flag: is_expired_credit_card_alert
+      expired_payment_tied_to_renewal_flag: is_expired_payment_tied_to_renewal
+      expiring_email_address_flag: is_expiring_email_address
+      failed_billing_flag: is_failed_billing
+      missing_payment_tied_to_auto_renewal_flag: is_missing_payment_tiedto_auto_renewal
+      sms_sign_up_flag: is_sms_sign_up
+      update_payment_method_90_day_flag: is_update_payment_method90day
+      update_payment_method_expired_flag: is_update_payment_method_expired
+      update_payment_method_expires_today_flag: is_update_payment_method_expires_today
+      etl_first_load_utc_ts: etl_first_load_ts
+      etl_last_refresh_utc_ts: etl_last_refresh_ts
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/fos_notification/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  emr_tag:
+    data_sub_domain: other

@@ -1,0 +1,54 @@
+pipeline_name: customer_venture
+interval: 00 15 * * *
+airflow_tag:
+  layer: mdm
+  team: marketing
+dependencies:
+  - venture_mart.ads_venture_enrichment_history
+  - venture_mart.domain_footprint_history
+  - venture_mart.domain_signal_history
+  - marketing_mart.marketable_customer
+emr:
+  master_instance_type : m5.12xlarge
+  core_instance_type : m5.12xlarge
+  number_of_core_instances: 4
+  bootstrap_file_path : utils/bootstrap.sh
+  ingest_data_stg:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t customer_venture_history
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/customer_venture/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  ingest_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t customer_venture
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/customer_venture/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  extract_data:
+    spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t customer_venture
+    custom_rename:
+      active_flag: is_active
+      venture_composition_desc: description
+      venture_create_utc_ts: create_ts
+      billing_resource_id: resource_id
+      ecommerce_flag: is_ecommerce
+      business_flag: is_business
+      dormant_flag: is_dormant
+      brick_mortar_business_flag: is_brick_and_mortar_business
+      service_area_business_flag: is_service_area_business
+      professional_services_flag: is_professional_services
+      dataprovider_business_tier_code: dp_business_tier
+      address_or_phone_present_flag: is_address_or_phone_on_website
+      active_website_flag: is_active_website
+      gd_social_universe_code: gd_social_universe
+      lead_type_code: lead_type
+      venture_segment_name: venture_segment
+      etl_first_load_utc_ts: etl_first_load_ts
+      etl_last_refresh_utc_ts: etl_last_refresh_ts
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/customer_venture/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  emr_tag:
+    data_sub_domain: other

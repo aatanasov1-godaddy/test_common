@@ -1,0 +1,5 @@
+purpose: 'MDM Rearchitecture'
+data_domain: 'marketing'
+team_name: 'MDPE-MarketingOps'
+on_call_group: 'Marketing-Franchise-Oncall'
+team_slack_channel: 'marketing-data-products-help'

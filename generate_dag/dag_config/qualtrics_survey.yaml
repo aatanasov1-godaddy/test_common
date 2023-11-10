@@ -1,0 +1,37 @@
+pipeline_name: qualtrics_survey
+interval: 20 9 * * *
+airflow_tag:
+  layer: mdm
+  team: marketing
+dependencies:
+  - marketing_mart.marketable_customer
+  - dp_enterprise.uds_customer_survey
+emr:
+  master_instance_type : m5.4xlarge
+  core_instance_type : r5d.4xlarge
+  number_of_core_instances: 1
+  bootstrap_file_path : utils/bootstrap.sh
+  ingest_data_stg:
+    spark_cmd: --driver-memory 8g --conf spark.executor.memoryOverhead=8G
+    params: -d mdm_local -t qualtrics_survey_history
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/qualtrics_survey/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  ingest_data:
+    spark_cmd: --driver-memory 8g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t qualtrics_survey
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/qualtrics_survey/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  extract_data:
+    spark_cmd: --driver-memory 8g --conf spark.driver.maxResultSize=0
+    params: -d mdm_local -t qualtrics_survey
+    custom_rename:
+      survey_response_end_utc_ts: survey_response_end_ts
+      etl_first_load_utc_ts: etl_first_load_ts
+      etl_last_refresh_utc_ts: etl_last_refresh_ts
+    py_files:
+      - gdcorp-dna/de-marketing-mdm/qualtrics_survey/spark/sql/*
+      - gdcorp-dna/de-marketing-mdm/utils/*
+  emr_tag:
+    data_sub_domain: other
