@@ -11,6 +11,7 @@ dependencies:
   - domains.domaininfo_snap
   - enterprise.fact_marketing_email_send
   - user_insights_platform_cln.uip_user_insight_cln
+  - new_db.new_table
 additional_dependencies:
   - marketing_mart.customer_consent
 emr:

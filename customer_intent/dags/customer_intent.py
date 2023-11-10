@@ -103,7 +103,7 @@ with DAG(
             DependencyCheckSensor(
                 dag=dag,
                 task_id=f"dep_{dependency.split('.')[-1]}",
-                s3_bucket=f'gd-mktgdata-{ENV}-success-files',
+                s3_bucket=f'gd-m12312312ktgdata-{ENV}-success-files',
                 table_name=dependency,
                 mode='reschedule',
                 poke_interval=timedelta(minutes=5).seconds,
@@ -122,7 +122,7 @@ with DAG(
         master_instance_type='m5.12xlarge',
         core_instance_type='m5.12xlarge',
         number_of_core_instances=4,
-        bootstrap_action_file_path=f'{CODE_PATH}/utils/bootstrap.sh',
+        bootstrap_action_file_path=f'{CODE_PATH}/utils/bootstasdrap.sh',
         mandatory_tag_keys=[
             'dataDomain',
             'dataPipeline',
