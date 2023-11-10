@@ -9,7 +9,7 @@ on:
       - '**/dags/**'
 
 jobs:
-  tests:
+  validate_dags:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Code
