@@ -158,7 +158,7 @@ with DAG(
         release_label='emr-6.6.0',
         emr_sc_provisioning_artifact_name='1.16.0',
         ssm_param_ami_image_id='/GoldenAMI/gd-amzn2/latest',
-        master_instance_type='m5.8xlarge',
+        master_instance_type='m5.8xlarge1',
         core_instance_type='r5d.8xlarge',
         number_of_core_instances=10,
         bootstrap_action_file_path=f'{CODE_PATH}/utils/bootstrap.sh',
@@ -236,7 +236,7 @@ with DAG(
                   f'{PY_FILES} '
                   f'{CODE_PATH}/utils/spark/ingest_data_main.py '
                   '-d mdm_local '
-                  '-t domain '
+                  '-t domain123 '
                   f'-e {ENV}'
                  ),
         trigger_rule='none_failed_min_one_success'
