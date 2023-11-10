@@ -50,7 +50,9 @@ SKIP_EXTRACT = """{{ dag_run.conf['skip_extract'] if dag_run != None and dag_run
 DAG_CONFIG = Variable.get(f'{DAG_ID}_config', default_var=json.dumps({'output_suffix': '_metl'}))
 DEPENDENCIES = [
     'websites_and_marketing_cln.website_cln',
+    'enterprise.dim_entitlement',
     'enterprise.dim_subscription',
+    'marketing_mart.marketable_customer'
 ]
 
 CODE_BUCKET = f's3://gd-mktgdata-{ENV}-code'
