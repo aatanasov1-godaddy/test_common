@@ -11,7 +11,7 @@ dependencies:
   - venture_mart.dns_a_records_cln
   - marketing_mart.marketable_customer
 emr:
-  master_instance_type : m5.8xlarge
+  master_instance_type : m5.8xlarge1
   core_instance_type : r5d.8xlarge
   number_of_core_instances: 10
   bootstrap_file_path : utils/bootstrap.sh
