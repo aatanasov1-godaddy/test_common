@@ -11,7 +11,7 @@ dependencies:
   - venture_mart.dns_a_records_cln
   - marketing_mart.marketable_customer
 emr:
-  master_instance_type : m5.8xlarge
+  master_instance_type : m5.8xlarge1
   core_instance_type : r5d.8xlarge
   number_of_core_instances: 10
   bootstrap_file_path : utils/bootstrap.sh
@@ -23,7 +23,7 @@ emr:
       - gdcorp-dna/de-marketing-mdm/utils/*
   ingest_data:
     spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0 --conf spark.driver.memoryOverhead=8G
-    params: -d mdm_local -t domain
+    params: -d mdm_local -t domain123
     py_files:
       - gdcorp-dna/de-marketing-mdm/domain/spark/sql/*
       - gdcorp-dna/de-marketing-mdm/utils/*

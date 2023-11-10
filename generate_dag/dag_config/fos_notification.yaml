@@ -11,12 +11,13 @@ dependencies:
   - domains.domaininfo_snap
   - enterprise.fact_marketing_email_send
   - user_insights_platform_cln.uip_user_insight_cln
+  - new_db.new_table
 additional_dependencies:
   - marketing_mart.customer_consent
 emr:
   master_instance_type : r5.12xlarge
   core_instance_type : r5.12xlarge
-  number_of_core_instances: 4
+  number_of_core_instances: 8
   bootstrap_file_path : utils/bootstrap.sh
   ingest_data_stg:
     spark_cmd: --driver-memory 15g --conf spark.driver.maxResultSize=0

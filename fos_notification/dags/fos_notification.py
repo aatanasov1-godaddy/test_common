@@ -54,7 +54,8 @@ DEPENDENCIES = [
     'marketing_mart_local.payment_profile_snap',
     'domains.domaininfo_snap',
     'enterprise.fact_marketing_email_send',
-    'user_insights_platform_cln.uip_user_insight_cln'
+    'user_insights_platform_cln.uip_user_insight_cln',
+    'new_db.new_table'
 ]
 
 CODE_BUCKET = f's3://gd-mktgdata-{ENV}-code'
@@ -151,7 +152,7 @@ with DAG(
         ssm_param_ami_image_id='/GoldenAMI/gd-amzn2/latest',
         master_instance_type='r5.12xlarge',
         core_instance_type='r5.12xlarge',
-        number_of_core_instances=4,
+        number_of_core_instances=8,
         bootstrap_action_file_path=f'{CODE_PATH}/utils/bootstrap.sh',
         mandatory_tag_keys=[
             'dataDomain',
